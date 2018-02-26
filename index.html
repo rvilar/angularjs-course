@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Introducció a AngularJS</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/black.css">
@@ -24,8 +24,122 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section>
+					<h1>AngularJS</h1>
+					<h3>Una introducció</h3>
+					<p>
+						<small>Creat per en <a href="http://https://twitter.com/rvilar">Ramon Vilar</a> d'<a href="http://ymbra.com">Ymbra</a></small>
+					</p>
+				</section>
+				<section>
+					<h2>Introducció</h2>
+					<p>AngularJS és un framework JS per a crear interfícies d'aplicaciones riques creat per Google.</p>
+					<p class="fragment">Es basa en una arquitectura MVC i seguint OOP.</p>
+				</section>
+				<section>
+					<section>
+						<h2>Conceptes bàsics</h2>
+					</section>
+					<section>
+						<h2>Classes</h2>
+						<p>ES6 introdueix el conceptes de classe típic de qualsevol llenguatge de programació OO.</p>
+						<pre><code class="js">class Polygon {
+  constructor(height, width) {
+    this.height = height;
+    this.width = width;
+  }
+}</code></pre>
+					</section>
+					<section>
+						<h2>Mòduls</h2>
+						<p>ES6 introdueix també el concepte de mòdul nadiu (ja fa anys que es venen usant a través de tècniques JS).</p>
+						<p class="fragment">La diferència principal és que usen de forma automàtica el mode estricte (<code class="js">"use strict";</code>) i que tot el que es declari en un mòdul és local en aquest.</p>
+						<p class="fragment">Cal importar i exportar tot.</p>
+					</section>
+					<section>
+						<h2>Mòduls</h2>
+						<pre><code class="js" data-noescape>// foo.js
+
+export function detectFoo(zone, options) {
+  // My code.
+}</code></pre>
+						<pre><code class="js">// bar.js
+
+import {detectFoo} from "foo.js";
+
+function go() {
+    var foo = detectFoo(canvas);
+    // ...
+}</code></pre>
+					</section>
+					<section>
+						<h2>TypeScript</h2>
+						<p>AngularJS està escrit (i usa) TypeScript</p>
+						<p class="fragment">És un llenguatge de programació desenvolupat per Microsoft.</p>
+						<p class="fragment">És un superconjunt de JavaScript que afegeix, entre d'altres, tipatge estàtic i objectes basats en classes.</p>
+					</section>
+					<section>
+						<h2>Decoradors</h2>
+						<p>Un decorador és una "funció" que afegeix informació a una funció, una variable o una classe.</p>
+						<pre><code class="js">class Example {
+  a() {}
+  @readonly
+  b() {}
+}</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Angular CLI</h2>
+						<p>És una interfície per línia de comandes per Angular.</p>
+						<p class="fragment">Ens facilita moltes operaciones diàries amb Angular tot estalviant-nos temps.</p>
+						<p class="fragment">Per instal·lar és tan fàcil com:</p>
+						<pre class="fragment"><code>npm install -g @angular/cli</code></pre>
+					</section>
+					<section>
+						<h2>Crear una aplicació</h2>
+						<p>Podem crear una aplicació Angular i servir-la des del nostre ordinador fent.</p>
+						<pre><code>ng new my-app
+cd my-app
+ng serve</code></pre>
+					</section>
+					<section>
+						<h2>Generar codi</h2>
+						<p>Angular CLI ens proporciona una comanda per a poder crear fàcilment diversos elements.</p>
+						<pre><code>// Generates a component.
+ng generate component MyComponent
+
+// Generates a service.
+ng generate component MyService</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Anatomia d'una aplicació</h2>
+						<p>Anem a crear la nostra primera aplicació Angular</p>
+						<p class="fragment">Anem a un directori de treball i executem el següent:</p>
+						<pre class="fragment"><code>ng new my-app
+cd my-app
+ng serve --open</code></pre>
+						<p class="fragment">Anem al navegador que se'ns ha obert a <code>http://localhost:4200/</code></p>
+					</section>
+					<section>
+						<h2>Modificació automàtica</h2>
+						<p>Accedim a <code>/src/app/app.component.ts</code> i podem provar de canviar el títol.</p>
+						<p class="fragment">Proveu de canviar també els estils a /src/app/app.component.css</p>
+					</section>
+					<section>
+						<h2>Fitxers d'una aplicació</h2>
+						<p>Anem a revisar tots els fitxers que formen part de l'aplicació.</p>
+					</section>
+					<section>
+						<h2>Exercicis</h2>
+						<ul>
+							<li>Proveu d'afegir HTML al component de l'aplicació</li>
+							<li>Proveu d'afegir una nova propietat a l'aplicació i mostrar-la</li>
+						</ul>
+					</section>
+				</section>
 			</div>
 		</div>
 
