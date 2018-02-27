@@ -79,8 +79,8 @@ function go() {
 						<p class="fragment">És un superconjunt de JavaScript que afegeix, entre d'altres, tipatge estàtic i objectes basats en classes.</p>
 					</section>
 					<section>
-						<h2>Decoradors</h2>
-						<p>Un decorador és una "funció" que afegeix informació a una funció, una variable o una classe.</p>
+						<h2>Anotacions</h2>
+						<p>Una anotació és una "funció" que afegeix informació a una funció, una variable o una classe.</p>
 						<pre><code class="js">class Example {
   a() {}
   @readonly
@@ -110,7 +110,7 @@ ng serve</code></pre>
 ng generate component MyComponent
 
 // Generates a service.
-ng generate component MyService</code></pre>
+ng generate service MyService</code></pre>
 					</section>
 				</section>
 				<section>
@@ -137,6 +137,189 @@ ng serve --open</code></pre>
 						<ul>
 							<li>Proveu d'afegir HTML al component de l'aplicació</li>
 							<li>Proveu d'afegir una nova propietat a l'aplicació i mostrar-la</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Arquitectura</h2>
+						<img src="images/angular-architecture.png" style="background: white;" />
+					</section>
+					<section>
+						<h2>Mòduls</h2>
+						<p>Una aplicació Angular és modular per definició i està formada per 1 o N mòduls.</p>
+						<p class="fragment">Cada aplicació té com a mínim un mòdul NgModule, el mòdul <em>root</em> (sovint <code>AppModule</code>).</p>
+						<pre class="fragment"><code class="js">@NgModule({
+  declarations: [
+    ...
+  ],
+  imports: [
+    ...
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }</code></pre>
+					</section>
+					<section>
+						<h2>Biblioteques</h2>
+						<p>Angular ens proporciona una sèrie de biblioteques que podem fer servir a les nostres aplicacions.</p>
+						<p class="fragment">Podem identificar una biblioteca d'angular perquè ve precedida del prefix <code>@angular</code></p>
+						<pre class="fragment"><code class="js">import { Component } from '@angular/core';</code></pre>
+					</section>
+					<section>
+						<h2>Components</h2>
+						<p>Un component controla una porció de la pantlla que anomenarem <em>vista</em>.</p>
+						<p class="fragment">La lògica d'un component la definirem sempre dins d'una classe.</p>
+						<p class="fragment">Angular crea, actualitza i destrueix components a mesura que l'usuari es mou per l'aplicació</p>
+					</section>
+					<section>
+						<h2>Components</h2>
+						<pre><code class="js">export class ShoppingListComponent implements OnInit {
+
+  lineItems: LineItem[];
+
+  constructor(private service: LineItemService) { }
+
+  ngOnInit() {
+    this.lineItems = this.service.getLineItems();
+  }
+
+}</code></pre>
+					</section>
+					<section>
+						<h2>Plantilles</h2>
+						<p>Per definir la vista d'un component usem una plantilla.</p>
+						<p class="fragment">Les plantilles estan desenvolupades amb HTML i usen <em>bindings</em> d'Angular per a poder interactuar amb la informació.</p>
+						<pre class="fragment"><code class="html">&lt;h2&gt;Hero List&lt;/h2&gt;
+
+&lt;p&gt;&lt;i&gt;Pick a hero from the list&lt;/i&gt;&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li *ngFor="let hero of heroes" (click)="selectHero(hero)"&gt;
+    {{hero.name}}
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+					</section>
+					<section>
+						<h2>Metadades</h2>
+						<p>Les metadades ajuden a Angular a saber com ha de processar una classe.</p>
+						<p class="fragment">Les metadades es passen a través d'anotacions com per exemple: <code>@Component</code>, <code>@Input</code> o <code>@Output</code>.</p>
+						<pre class="fragment"><code class="js">@Component({
+  selector:    'app-hero-list',
+  templateUrl: './hero-list.component.html',
+  providers:  [ HeroService ]
+})
+export class HeroListComponent implements OnInit {
+/* . . . */
+}</code></pre>
+					</section>
+					<section>
+						<h2>Serveis</h2>
+						<p>Un servei és qualsevol classe que proporciona una funcionalitat o dades, de forma concisa i precisa.</p>
+						<p class="fragment">El concepte de servei no és propi d'Angular, però s'usa molt sovvint per a organitzar les aplicacions per tal de que siguin fàcilment mantenibles.</p>
+						<p class="fragment">Angular es basa en el patró d'injecció de dependències.</p>
+						<pre class="fragment"><code class="js">constructor(private service: HeroService) { }</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Plantilles</h2>
+						<p>Les plantilles es construeixen amb HTML normal i corrent.</p>
+						<p>Per motius de seguretat l'element &lt;script&gt; no està permés en una plantilla. En cas de trobar-lo, s'ignorarà.</p>
+					</section>
+					<section>
+						<h2>Interpolació</h2>
+						<p>Per a mostrar un valor en una plantilla s'usa <code>{{ }}</code></p>
+						<pre><code class="html">&lt;a href="{{url}}"&gt;Hi {{user.name}}. How are you?.&lt;/a&gt;</code></pre>
+						<p class="fragment">Les expressions usades poden referir-se a propietats del context de la plantilla.</p>
+					</section>
+					<section>
+						<h2>Pipes</h2>
+						<p>El resultat d'una expressió es pot transformar abans de mostrar-se en una plantilla amb una pipe.</p>
+						<pre><code class="html">&lt;h2&gt;{{title | uppercase}}&lt;/h2&gt;</code></pre>
+						<p class="fragment">I fins i tot podent tenir paràmetres</p>
+						<pre class="fragment"><code class="html">&lt;p&gt;Birthdate: {{birthdate | date:'longDate'}}&lt;/p&gt;</code></pre>
+					</section>
+					<section>
+						<h2>NgForOf</h2>
+						<p>Serveix per a presentar una llista de valors en una plantilla</p>
+						<pre><code class="html">&lt;div *ngFor="let hero of heroes; let i=index;"&gt;
+  ({{i}}) {{hero.name}}
+&lt;/div&gt;</code></pre>
+						<p class="fragment">A més a més de l'índex, permet obtenir altres valors del bucle com booleans indicant si és el primer o el darrer valor, o si és un valor parell o senar.</p>
+					</section>
+					<section>
+						<h2>NgIf</h2>
+						<p>Es pot afegir o eliminar un element al DOM aplicant aquesta directiva a un element.</p>
+						<pre><code class="html">&lt;div *ngIf="heroes.length > 3"&gt;
+  There is a lot of heroes!
+&lt;/div&gt;</code></pre>
+						<p class="fragment">No confonguem eliminar amb amagar!</p>
+					</section>
+					<section>
+						<h2>Exercici - Shopping list</h2>
+						<p>Modifiqueu la vostra aplicació de prova per tal de tenir la següent estructura</p>
+						<ul>
+							<li>Una classe que representi un element d'una llista de compra <code>LineItem</code> amb dues propietats: id, name</li>
+							<li>El vostre component ha de crear una <code>ShoppingList: LineItem[]</code></li>
+							<li>Creeu contingut de prova i mostreu-lo a la plantilla</li>
+						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Data Binding</h2>
+						<p>És el mecanisme per a coordinar el que veu l'usuari amb els valors de l'aplicació.</p>
+						<p class="fragment">Nosaltres declarem la unió de valors i el framework fa la feina per a comunicar aquesta informació entre ells mateixos.</p>
+						<p class="fragment">N'hi ha principalment de tres tipus.</p>
+					</section>
+					<section>
+						<h2>Important</h2>
+						<p>Amb aquests mètodes no establim valors als atributs de l'HTML, si no que treballem amb propietats.</p>
+						<pre><code class="html">&lt;button [disabled]="isUnchanged"&gt;Save&lt;/button&gt;</code></pre>
+						<p class="fragment">No estem treballant amb l'atribut <code>disabled</code> si no que amb la seva propietat!</p>
+					</section>
+					<section>
+						<h2>Property binding</h2>
+						<p>Enllaça una propietat d'un element a una propietat d'un component.</p>
+						<pre><code class="html">&lt;img [src]="myImageUrl"&gt;
+&lt;img bind-src="myImageUrl"&gt;</code></pre>
+						<p>Ara si canvia la propietat del component <code>myImageUrl</code> canviarà de forma automàtica a l'HTML.</p>
+					</section>
+					<section>
+						<h2>Atributs, classes i estils</h2>
+						<p>Per poder establir valors a atributs (aria, svgs i span de taules) s'ha d'usar</p>
+						<pre><code class="html">&lt;button [attr.aria-label]="actionName"&gt;{{actionName}} with Aria&lt;/button&gt;</code></pre>
+						<p class="fragment">Per a establir valors de classes:</p>
+						<pre class="fragment"><code class="html">&lt;div [class.special]="isSpecial"&gt;The class binding is special&lt;/div&gt;</code></pre>
+						<p class="fragment">Per a més opcions, podeu mirar la directiva <a href="https://angular.io/guide/template-syntax#ngClass">NgClass</a></p>
+					</section>
+					<section>
+						<h2>Atributs, classes i estils</h2>
+						<p>Per a poder establir valors d'estils:</p>
+						<pre><code class="html">&lt;button [style.color]="isSpecial ? 'red': 'green'"&gt;Red&lt;/button&gt;</code></pre>
+						<p class="fragment">Per a establir valors amb unitats:</p>
+						<pre class="fragment"><code class="html">&lt;button [style.font-size.em]="isSpecial ? 3 : 1" &gt;Big&lt;/button&gt;</code></pre>
+						<p class="fragment">Per a més opcions, podeu mirar la directiva <a href="https://angular.io/guide/template-syntax#ngStyle">NgStyle</a></p>
+					</section>
+					<section>
+						<h2>Event binding</h2>
+						<p>S'utilitza per a establir valors des d'un element a un component.</p>
+						<pre><code class="html">&lt;button (click)="onSave()"&gt;Save&lt;/button&gt;
+&lt;button on-click="onSave()"&gt;Save&lt;/button&gt;</code></pre>
+						<p class="fragment">En fer clic al botó, es crida al mètode del component.</p>
+					</section>
+					<section>
+						<h2>Two-way binding</h2>
+						<p>Aquest és el darrer dels casos: quan volem mostrar un valor a la vegada que l'estem modificant la propietat.</p>
+						<p>Un cas especial és l'ús en formularis amb <code>NgModel</code> (cal importar <code>FormsModule</code>).</p>
+						<pre><code class="html">&lt;input [(ngModel)]="currentHero.name"&gt;</code></pre>
+					</section>
+					<section>
+						<h2>Exercici</h2>
+						<p>Agafem la llista de la compra d'abans i afegim les següents opcions.</p>
+						<ul>
+							<li>Un botó per esborrar tota la llista de la compra</li>
+							<li>Al fer clic en un element, es mostra un input per a poder modificar el nom de l'element de la compra</li>
 						</ul>
 					</section>
 				</section>
