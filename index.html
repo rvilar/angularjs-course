@@ -319,8 +319,180 @@ export class HeroListComponent implements OnInit {
 						<p>Agafem la llista de la compra d'abans i afegim les següents opcions.</p>
 						<ul>
 							<li>Un botó per esborrar tota la llista de la compra</li>
-							<li>Al fer clic en un element, es mostra un input per a poder modificar el nom de l'element de la compra</li>
+							<li>Al fer clic en un element, es mostra un input per a poder modificar el nom de l'element de la compra i es modifica a mesura que escric</li>
 						</ul>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Comunicació entre components</h2>
+						<p>No es pot accedir a propietats o mètodes d'un altre component (només té accés al seu context públic).</p>
+						<p class="fragment">I què fem si jo vull passar un element d'un component a un altre de diferent? Per exemple des d'un llistat a un detall? I si vull reaccionar a un esdeveniment?</p>
+						<p class="fragment">Entren en joc les annotacions <code>@Input</code> i <code>@Output</code></p>
+					</section>
+					<section>
+						<h2><code>@Input</code></h2>
+						<p>En cas de voler "passar" un valor d'un component pare a un componet fill podem fer una cosa del tipus:</p>
+						<pre><code class="html">&lt;app-list-detail [listItem]="selectedListItem"&gt;&lt;/app-list-detail&gt;</code></pre>
+						<p class="fragment">Però si fem directament això el compilador ens donarà un missatge de violació d'accés</p>
+					</section>
+					<section>
+						<h2><code>@Input</code></h2>
+						<p>Cal definir la variable com a element d'entrada.</p>
+						<pre><code class="js">@Input() listItem: ListItem;</code></pre>
+						<p class="fragment">Amb això fem que el valor de <code>selectedListItem</code> es vinculi amb la propietat <code>listItem</code> del component <code>ListDetailComponent</code>.</p>
+					</section>
+					<section>
+						<h2><code>@Output</code></h2>
+						<p>En canvi, si el que volem és que un valor d'un component fill pugi cap al pare, farem servir una cosa així.</p>
+						<pre><code class="html">&lt;app-list-detail (deleteExecuted)="deleteItem($event)"&gt;&lt;/app-list-detail&gt;</code></pre>
+						<p class="fragment">Igualment si fem directament això el compilador ens donarà un missatge de violació.</p>
+					</section>
+					<section>
+						<h2><code>@Output</code></h2>
+						<p>Cal definir el mètode com a element de sortida.</p>
+						<pre><code class="js">@Output() deleteExecuted = new EventEmitter&lt;ListItem&gt;();</code></pre>
+						<p class="fragment">Amb això fem que la propietat <code>deleteExecuted</code> pugui emetre un esdeveniment informant del <code>LineItem</code> eliminat i que un altre component pugui reaccionar-hi.</p>
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<img src="images/child-to-parent.gif">
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<pre><code class="js">import { Component, EventEmitter, Input, Output } from '@angular/core';
+
+@Component({
+  selector: 'app-voter',
+  template: `
+    &lt;h4&gt;{{name}}&lt;/h4&gt;
+    &lt;button (click)="vote(true)"  [disabled]="voted"&gt;Agree&lt;/button&gt;
+    &lt;button (click)="vote(false)" [disabled]="voted"&gt;Disagree&lt;/button&gt;
+  `
+})
+export class VoterComponent {
+  @Input()  name: string;
+  @Output() onVoted = new EventEmitter&lt;boolean&gt;();
+  voted = false;
+
+  vote(agreed: boolean) {
+    this.onVoted.emit(agreed);
+    this.voted = true;
+  }
+}</code></pre>
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<pre><code class="js">import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-vote-taker',
+  template: `
+    &lt;h2&gt;Should mankind colonize the Universe?&lt;/h2&gt;
+    &lt;h3&gt;Agree: {{agreed}}, Disagree: {{disagreed}}&lt;/h3&gt;
+    &lt;app-voter *ngFor="let voter of voters"
+      [name]="voter"
+      (onVoted)="onVoted($event)"&gt;
+    &lt;/app-voter&gt;
+  `
+})
+export class VoteTakerComponent {
+  agreed = 0;
+  disagreed = 0;
+  voters = ['Mr. IQ', 'Ms. Universe', 'Bombasto'];
+
+  onVoted(agreed: boolean) {
+    agreed ? this.agreed++ : this.disagreed++;
+  }
+}</code></pre>
+					</section>
+					<section>
+						<h2>Variable de referència en una plantilla</h2>
+						<p>Podem crear una referència a un element fent servir la sintaxis <code>#var</code></p>
+						<pre><code class="html">&lt;input #phone placeholder="phone number"&gt;</code></pre>
+						<p class="fragment">I usar-la més endavant allà on ens interessi.</p>
+						<pre class="fragment"><code class="html">&lt;button (click)="callPhone(phone.value)"&gt;Call&lt;/button&gt;</code></pre>
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<p>Les variables poden referenciar a un component, i per tant, en una plantilla podem fer una cosa com aquesta.</p>
+						<pre><code class="html">&lt;h3&gt;Countdown&lt;/h3&gt;
+&lt;button (click)="timer.start()"&gt;Start&lt;/button&gt;
+&lt;button (click)="timer.stop()"&gt;Stop&lt;/button&gt;
+&lt;div class="seconds"&gt;{{timer.seconds}}&lt;/div&gt;
+&lt;app-countdown-timer #timer&gt;&lt;/app-countdown-timer&gt;</code></pre>
+					</section>
+					<section>
+						<h2>Exercici</h2>
+						<p>Seguint amb l'exemple de la ShoppingList, dividim l'aplicació en dos components, de tal forma que tinguem un component per al llistat i un altre de diferent per al detall/formulari de modificació de valors.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2><em>Routing</em></h2>
+						<p>Sovint a les nostres aplicacions voldrem que les vistes siguin accessibles a través de certs URLs.</p>
+						<p class="fragment">A Angular treballarem amb el concepte <code>Routes</code>.</p>
+						<p class="fragment">Tot i que ho podem declarar a l'aplicació general, es recomana la creació d'un mòdul específic.</p>
+					</section>
+					<section>
+						<h2>Classe base</h2>
+						<p>Podem usar una classe base com la següent:</p>
+						<pre><code class="js">import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+
+@NgModule({
+  exports: [ RouterModule ]
+})
+export class AppRoutingModule {}</code></pre>
+					</section>
+					<section>
+						<h2>Definició d'una ruta</h2>
+						<p>Per definir rutes hem de fer:</p>
+						<pre><code class="js">const routes: Routes = [
+  { path: 'heroes', component: HeroesComponent }
+];</code></pre>
+						<p class="fragment">I afegir-ho a <code>@NgModule.imports</code>:</p>
+						<pre class="fragment"><code class="js">imports: [ RouterModule.forRoot(routes) ],</code></pre>
+					</section>
+					<section>
+						<h2>Modificació de l'aplicació</h2>
+						<p>Ara cal obrir la nostra <code>AppComponent</code> per exemple i afegir:</p>
+						<pre><code class="html">&lt;h1&gt;{{title}}&lt;/h1&gt;
+&lt;nav&gt;
+  &lt;a routerLink="/heroes"&gt;Heroes&lt;/a&gt;
+&lt;/nav&gt;
+&lt;router-outlet&gt;&lt;/router-outlet&gt;</code></pre>
+						<p class="fragment">Ara dins de <code>&lt;router-outlet&gt;</code> es mostrarà el component definit per la ruta</p>
+					</section>
+					<section>
+						<h2>Rutes per defecte</h2>
+						<p>Podem definir una ruta per defecte perquè hi navegui sempre quan anem a l'arrel de l'aplicació.</p>
+						<pre><code class="js">{ path: '', redirectTo: '/dashboard', pathMatch: 'full' }</code></pre>
+					</section>
+					<section>
+						<h2>Rutes comodí</h2>
+						<p>Ens pot interessar interceptar qualsevol ruta que no estigui definida per, per exemple, enviar-la a la típica pàgina 404.</p>
+						<pre><code class="js">{ path: '**', component: PageNotFoundComponent }</code></pre>
+					</section>
+					<section>
+						<h2>Rutes amb paràmetres</h2>
+						<p>Hi ha certes pàgines que ens pot interessar accedir-hi via una adreça amb paràmetres, del tipus <code>/detail/23</code>. Per fer-ho podem declarar:</p>
+						<pre><code class="js">{ path: 'detail/:id', component: HeroDetailComponent }</code></pre>
+					</section>
+					<section>
+						<h2>Ús de paràmetres de l'URL</h2>
+						<p>Si volem a més a més, obtenir el valor de l'URL per a poder mostrar aquell valor específic, caldrà injectar un servei al constructor del component amb el que treballem.</p>
+						<pre><code class="js">constructor(private route: ActivatedRoute) {}</code></pre>
+					</section>
+					<section>
+						<h2>Ús de paràmetres de l'URL</h2>
+						<p>Allà on vulguem usar el valor, el podem obtenir del paràmetre de l'URL fent:</p>
+						<pre><code class="js">const id = this.route.snapshot.paramMap.get('id');</code></pre>
+						<p class="fragment">Cal tenir present que tots els paràmetres obtinguts de l'URL són strings. Si volem usar com a nombre, caldrà transformar-lo.</p>
+					</section>
+					<section>
+						<h2>Exercici</h2>
+						<p>Anem a transformarla nostra aplicació de la llista de la compra per tal de poder ser accessible via <code>/shopping-list</code> i el seu detall mitjançant <code>/list-item/&lt;id&gt;</code></p>
 					</section>
 				</section>
 			</div>
