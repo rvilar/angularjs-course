@@ -493,6 +493,146 @@ export class AppRoutingModule {}</code></pre>
 					<section>
 						<h2>Exercici</h2>
 						<p>Anem a transformarla nostra aplicació de la llista de la compra per tal de poder ser accessible via <code>/shopping-list</code> i el seu detall mitjançant <code>/list-item/&lt;id&gt;</code></p>
+						<p>Extra: afegiu opcions per a poder tenir una pàgina d'error.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Formularis</h2>
+						<p>Existeixen dues formes diferents de poder crear formularis a Angular:</p>
+						<ul>
+							<li><em>Template-driven Forms</em></li>
+							<li><em>Reactive Forms</em></li>
+						</ul>
+					</section>
+					<section>
+						<h2><em>Template-driven Forms</em></h2>
+						<p>Es basa en la directiva <code>ngModel</code> que ja coneixem.</p>
+						<p class="fragment">Tota la lògica del formulari es defineix a la plantilla (mapping, validacions, etc.).</p>
+						<p class="fragment">Addient per a petits formularis però ràpidament es queda curt.</p>
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<pre><code class="html">&lt;form #form="ngForm" (ngSubmit)="onSubmit()"&gt;
+  &lt;p&gt;
+    &lt;label&gt;First Name:&lt;/label&gt;
+    &lt;input type="text" [(ngModel)]="user.firstName" required&gt; name="firstName"
+  &lt;/p&gt;
+  &lt;p&gt;
+    &lt;label&gt;Last Name:&lt;/label&gt;
+    &lt;input type="text" [(ngModel)]="user.LastName" required&gt; name="lastName"
+  &lt;/p&gt;
+  &lt;p&gt;
+    &lt;button type="submit" [disabled]="!f.valid"&gt;Submit&lt;/button&gt;
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<p>En aquest cas, gràcies al <em>two-way binding</em> la nostra funció de submit pot quedar ben senzilla.</p>
+						<pre><code class="js">onSubmit() {
+  console.log(this.user);
+  this.user.save();
+}</code></pre>
+					</section>
+					<section>
+						<h2>Notes</h2>
+						<p>En cas de no voler <em>two-way binding</em>, podem només usar en una direcció <code>[ngModel]</code> i fer:</p>
+						<pre><code class="html">&lt;form #form="ngForm" (ngSubmit)="onSubmit(form)"&gt;</code></pre>
+						<pre><code class="js">onSubmit({value}) {
+  this.user.firstName = value.firstName;
+  this.user.lastName = value.lastName;
+  this.user.save();
+}</code></pre>
+					</section>
+					<section>
+						<h2>Desavantatges</h2>
+						<p>Si anem afegint lògica al formulari, validacions, etc. aquests es torna difícil de llegir i de mantenir. A més, no podem fer proves unitàries del formularis!</p>
+						<p class="fragment">Imaginem-nos que necessitem fer validacions dependents d'un altre camp, com per exemple, comprovar que dos camps tenen el mateix valor.</p>
+						<p class="fragment">Es necessita una versió més avançada de declaració de formularis.</p>
+					</section>
+					<section>
+						<h2><em>Reactive Forms</em></h2>
+						<p>També anomenats <em>Model driven</em> és una forma de definir formularis des de codi, tot fent independent la seva modulació HTML de la seva modulació en codi.</p>
+						<p class="fragment">Es basa en el mòdul <em>ReactiveFormsModule</em></p>
+						<pre class="fragment"><code class="js">import {ReactiveFormsModule} from "@angular/forms";</code></pre>
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<pre><code class="html">&lt;form [formGroup]="userForm" (ngSubmit)="onSubmit()"&gt;
+  &lt;p&gt;
+    &lt;label&gt;First Name:&lt;/label&gt;
+    &lt;input type="text" formControlName="firstName"
+  &lt;/p&gt;
+  &lt;p&gt;
+    &lt;label&gt;Last Name:&lt;/label&gt;
+    &lt;input type="text" formControlName="lastName"
+  &lt;/p&gt;
+  &lt;p&gt;
+    &lt;button type="submit" [disabled]="!f.valid"&gt;Submit&lt;/button&gt;
+  &lt;/p&gt;
+&lt;/form&gt;</code></pre>
+					</section>
+					<section>
+						<h2>Agnòstic</h2>
+						<p>Si ens fixem, ara tenim una directiva <code>formGroup</code> associada a una variable anomenada <code>userForm</code></p>
+						<p class="fragment">Ara la nostra plantilla no té informació sobre validacions. Aquestes residiran al controlador, el qual pot ser provat unitàriament.</p>
+					</section>
+					<section>
+						<h2>Exemple</h2>
+						<p>El nostre controlador tindrà la següent pinta.</p>
+						<pre><code class="js">export class UserFormComponent {
+  userForm: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.createForm();
+  }
+
+  createForm() {
+    this.userForm = this.fb.group({
+      firstName: ['', Validators.required ],
+      lastName: ['', Validators.required ]
+    });
+  }
+
+  onSubmit() {
+		// Show formModel.
+    console.log(this.userForm.value);
+  }
+}</code></pre>
+					</section>
+					<section>
+						<h2>Avantatges</h2>
+						<p>Això ens permet poder tenir el model completament independent del formulari (formularis parcials).</p>
+						<p class="fragment">A més, se'ns obre la possibilitat de poder aplicar programació reactiva.</p>
+					</section>
+					<section>
+						<h2>Establir valors del formulari</h2>
+						<p>Podem establir tots els valors d'un formulari amb <code>setValue</code>.</p>
+						<pre><code class="js">this.form.setValue({
+  firstName: this.user.firstName,
+  lastName: this.user.lastName
+});</code></pre>
+						<pre class="fragment"><code class="js">this.form.setValue(user);</code></pre>
+					</section>
+					<section>
+						<h2>Establir valors del formulari</h2>
+						<p>Però també podem especificar només valors per part dels elements amb <code>patchValue</code>.</p>
+						<pre><code class="js">this.form.patchValue({
+  firstName: this.user.firstName
+});</code></pre>
+						<pre class="fragment"><code class="js">this.form.setValue(user);</code></pre>
+					</section>
+					<section>
+						<h2>Bonus: reset d'un formulari</h2>
+						<p>Podem esborrar tots els camps (i estat) d'un formulari fent servir la funció <code>reset()</code></p>
+						<pre><code class="js">this.form.reset();</code></pre>
+					</section>
+					<section>
+						<h2>Exercici</h2>
+						<p>Afegim un formulari al shoppingList per tal de poder afegir nous elements a la llista</p>
+						<p>Ampliem el model de dades per a especificar nom de l'element (obligatori) i quantitat, per defecte 1.</p>
+						<p>Usar reactive forms.</p>
 					</section>
 				</section>
 			</div>
