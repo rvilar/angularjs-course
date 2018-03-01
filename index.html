@@ -516,11 +516,11 @@ export class AppRoutingModule {}</code></pre>
 						<pre><code class="html">&lt;form #form="ngForm" (ngSubmit)="onSubmit()"&gt;
   &lt;p&gt;
     &lt;label&gt;First Name:&lt;/label&gt;
-    &lt;input type="text" [(ngModel)]="user.firstName" required&gt; name="firstName"
+    &lt;input type="text" [(ngModel)]="user.firstName" name="firstName" required&gt;
   &lt;/p&gt;
   &lt;p&gt;
     &lt;label&gt;Last Name:&lt;/label&gt;
-    &lt;input type="text" [(ngModel)]="user.LastName" required&gt; name="lastName"
+    &lt;input type="text" [(ngModel)]="user.LastName" name="lastName" required&gt;
   &lt;/p&gt;
   &lt;p&gt;
     &lt;button type="submit" [disabled]="!f.valid"&gt;Submit&lt;/button&gt;
@@ -562,11 +562,11 @@ export class AppRoutingModule {}</code></pre>
 						<pre><code class="html">&lt;form [formGroup]="userForm" (ngSubmit)="onSubmit()"&gt;
   &lt;p&gt;
     &lt;label&gt;First Name:&lt;/label&gt;
-    &lt;input type="text" formControlName="firstName"
+    &lt;input type="text" formControlName="firstName"&gt;
   &lt;/p&gt;
   &lt;p&gt;
     &lt;label&gt;Last Name:&lt;/label&gt;
-    &lt;input type="text" formControlName="lastName"
+    &lt;input type="text" formControlName="lastName"&gt;
   &lt;/p&gt;
   &lt;p&gt;
     &lt;button type="submit" [disabled]="!f.valid"&gt;Submit&lt;/button&gt;
@@ -633,6 +633,89 @@ export class AppRoutingModule {}</code></pre>
 						<p>Afegim un formulari al shoppingList per tal de poder afegir nous elements a la llista</p>
 						<p>Ampliem el model de dades per a especificar nom de l'element (obligatori) i quantitat, per defecte 1.</p>
 						<p>Usar reactive forms.</p>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Consumir serveis REST</h2>
+						<p>Per a fer-ho farem servir un servei anomenat <code>HttpClient</code> disponible mitjançant <code>HttpClientModule</code>.</p>
+						<p class="fragment">Hem d'injectar el servei al nostre component per tal de poder-lo fer servir.</p>
+						<pre class="fragment"><code class="js">constructor(private http: HttpClient) {}</code></pre>
+					</section>
+					<section>
+						<h2><code>HttpClient</code></h2>
+						<p>Usa l'objecte <code>XMLHttpRequest</code> propi dels navegadors per a poder fer peticions dels següents tipus:</p>
+						<ul>
+							<li>get</li>
+							<li>post</li>
+							<li>put</li>
+							<li>delete</li>
+							<li>patch</li>
+							<li>head</li>
+							<li>jsonp</li>
+						</ul>
+					</section>
+					<section>
+						<h2>Consultar dades</h2>
+						<p>Per a llançar una petició de consulta, només cal cridar al mètode <code>get()</code> de l'objecte i subscriure'ns-hi.</p>
+						<pre><code class="js">this.http.get(url).subscribe(data => {
+  console.log(data);
+});</code></pre>
+						<p class="fragment">Tècnicament, qui executa la petició és la crida a <code>subscribe()</code>. Sense això, no s'executaria.</p>
+					</section>
+					<section>
+						<h2>Resposta</h2>
+						<p>Aquesta crida retornaria a <code>data</code> un anònim <code>Object</code>, imaginem-nos, amb diverses propietats, entre les quals, <code>name</code> i <code>surname</code>.
+						<p class="fragment">Només podríem accedir als seus valors fent: <code class="js">data['name']</code> o <code class="js">data['surname']</code>.
+						<p class="fragment">Però el que de debò ens agradaria és poder accedir mitjançant la notació del punt <code class="js">data.name</code> o <code class="js">data.surname</code>.
+					</section>
+					<section>
+						<h2>Resposta</h2>
+						<p>El que podem fer és, per exemple, fer <em>cast</em> de la resposta a un tipus que disposi de les propietats corresponents.</p>
+						<p class="fragment">Per això, podem definir una <em>interface</em> amb les propietats que ens interessi:</p>
+						<pre class="fragment"><code class="js">interface UserResponse {
+  name: string,
+  surname: string
+}</code></pre>
+					</section>
+					<section>
+						<h2>Resposta</h2>
+						<p>Ara ja podem fer <em>cast</em> en la resposta de la petició:</p>
+						<pre><code class="js">this.http.get&lt;UserResponse&gt;(url).subscribe(data => {
+  console.log('User name: ' + data.name);
+  console.log('User surname: ' + data.surname);
+});</code></pre>
+					</section>
+					<section>
+						<h2>Gestió dels errors</h2>
+						<pre><code class="js">this.http.get&lt;UserResponse&gt;(url).subscribe(
+  data => {
+    console.log('User name: ' + data.name);
+    console.log('User surname: ' + data.surname);
+  },
+  err => {
+    console.log('Error occurred.');
+  }
+);</code></pre>
+						<p class="fragment">Si volem accedir a més informació de l'error, podem definir el paràmetre com de tipus:</p>
+						<pre class="fragment"><code>(err: HttpErrorResponse)</code></pre>
+					</section>
+					<section>
+						<h2>Fer un post a servidor</h2>
+						<pre><code class="js">const req = this.http.post(url, data)
+.subscribe(
+  res => {
+    console.log(res);
+  },
+  err => {
+    console.log("Error occured");
+  }
+);</code></pre>
+					</section>
+					<section>
+						<h2>Exercici</h2>
+						<p>Usant https://jsonplaceholder.typicode.com/, anem a construir una aplicació que consulti l'endpoint /posts i llisti la seva resposta.</p>
+						<p>Una vegada fet això, fem un formulari amb dos camps, title i body, i al fer clic a un botó, envïi els valors a /posts amb userId = 2.</p>
 					</section>
 				</section>
 			</div>
